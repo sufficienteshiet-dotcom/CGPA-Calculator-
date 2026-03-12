@@ -1,246 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CGPA Calculator</title>
+  <meta charset="UTF-8">
+  <title>CGPA Calculator</title>
 
-<style>
+  <!-- Full-screen and mobile-friendly meta tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2c3e50">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
-body{
-font-family: Arial, sans-serif;
-padding:20px;
-background:#f7f7f7;
-}
-
-h1{
-text-align:center;
-}
-
-input{
-padding:8px;
-margin:5px 0;
-width:100%;
-max-width:300px;
-}
-
-button{
-padding:8px 12px;
-margin:5px 5px 10px 0;
-background:#2c7be5;
-color:white;
-border:none;
-border-radius:4px;
-cursor:pointer;
-}
-
-button:hover{
-background:#1a5fcc;
-}
-
-ul{
-padding-left:20px;
-}
-
-li{
-margin:6px 0;
-}
-
-#result{
-margin-top:20px;
-font-size:1.4em;
-}
-
-</style>
-
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 15px;
+      background-color: #f7f7f7;
+    }
+    h1, h3 {
+      text-align: center;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #course-list li {
+      margin-bottom: 5px;
+    }
+    #instructions {
+      background-color: #e0f7fa;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>CGPA Calculator</h1>
-
-<input type="text" id="courseName" placeholder="Course Name">
-
-<input type="number" id="creditUnit" placeholder="Credit Unit">
-
-<input type="number" id="gradePoint" placeholder="Grade Point">
-
-<br>
-
-<button onclick="addCourse()">Add Course</button>
-
-<button onclick="calculateCGPA()">Calculate CGPA</button>
-
-<button onclick="clearCourses()">Clear All Courses</button>
-
-<h3>Courses:</h3>
-
-<ul id="courseList"></ul>
-
-<h2 id="result">CGPA: 0.00</h2>
-
-<script>
-
-let courses = [];
-
-
-function addCourse(){
-
-let name=document.getElementById("courseName").value;
-
-let credit=Number(document.getElementById("creditUnit").value);
-
-let grade=Number(document.getElementById("gradePoint").value);
-
-
-if(!name || !credit || !grade){
-
-alert("Please fill all fields");
-
-return;
-
-}
-
-
-courses.push({name,credit,grade});
-
-
-localStorage.setItem("courses",JSON.stringify(courses));
-
-
-displayCourses();
-
-
-document.getElementById("courseName").value="";
-
-document.getElementById("creditUnit").value="";
-
-document.getElementById("gradePoint").value="";
-
-}
-
-
-
-function displayCourses(){
-
-let list=document.getElementById("courseList");
-
-list.innerHTML="";
-
-
-courses.forEach((course,index)=>{
-
-
-let li=document.createElement("li");
-
-
-li.textContent=`${course.name} | CU: ${course.credit} | GP: ${course.grade} `;
-
-
-let deleteBtn=document.createElement("button");
-
-deleteBtn.textContent="Delete";
-
-
-deleteBtn.onclick=function(){
-
-deleteCourse(index);
-
-};
-
-
-li.appendChild(deleteBtn);
-
-
-list.appendChild(li);
-
-
-});
-
-}
-
-
-
-function deleteCourse(index){
-
-courses.splice(index,1);
-
-
-localStorage.setItem("courses",JSON.stringify(courses));
-
-
-displayCourses();
-
-}
-
-
-
-function calculateCGPA(){
-
-let totalPoints=0;
-
-let totalCredits=0;
-
-
-courses.forEach(course=>{
-
-totalPoints+=course.grade*course.credit;
-
-totalCredits+=course.credit;
-
-});
-
-
-if(totalCredits===0){
-
-alert("Add courses first");
-
-return;
-
-}
-
-
-let cgpa=totalPoints/totalCredits;
-
-
-document.getElementById("result").textContent=`CGPA: ${cgpa.toFixed(2)}`;
-
-}
-
-
-
-function clearCourses(){
-
-courses=[];
-
-
-localStorage.removeItem("courses");
-
-
-displayCourses();
-
-
-document.getElementById("result").textContent="CGPA: 0.00";
-
-}
-
-
-
-window.onload=function(){
-
-let savedCourses=localStorage.getItem("courses");
-
-if(savedCourses){
-
-courses=JSON.parse(savedCourses);
-
-displayCourses();
-
-}
-
-}
-
-</script>
+  <h1>CGPA Calculator</h1>
+
+  <!-- Instructions for first-time users -->
+  <div id="instructions">
+    <h3>How to use this CGPA Calculator</h3>
+    <ol>
+      <li>Enter the course name, credit unit, and grade point.</li>
+      <li>Click "Add Course" to save it.</li>
+      <li>The course list will appear below, showing all your entries.</li>
+      <li>Click "Delete" next to a course to remove it.</li>
+      <li>Click "Clear All Courses" to remove all courses at once.</li>
+      <li>Your courses are saved automatically and will stay even if you close the page.</li>
+      <li>Click "Calculate CGPA" to see your current CGPA.</li>
+    </ol>
+  </div>
+
+  <!-- Calculator input -->
+  <input type="text" id="course-name" placeholder="Course Name">
+  <input type="number" id="credit-unit" placeholder="Credit Unit">
+  <input type="number" id="grade-point" placeholder="Grade Point">
+  <button id="add-course">Add Course</button>
+  <button id="calculate">Calculate CGPA</button>
+  <button id="clear-courses">Clear All Courses</button>
+
+  <h2 id="result">Your CGPA will appear here</h2>
+
+  <!-- Course list -->
+  <ul id="course-list"></ul>
+
+  <script>
+    let courses = JSON.parse(localStorage.getItem('courses')) || [];
+
+    function renderCourses() {
+      let html = '';
+      courses.forEach((course, index) => {
+        html += `<li>${course.name} - ${course.creditUnit} CU - ${course.gradePoint} GP 
+                  <button onclick="deleteCourse(${index})">Delete</button>
+                </li>`;
+      });
+      document.getElementById('course-list').innerHTML = html;
+    }
+
+    function deleteCourse(index) {
+      courses.splice(index, 1);
+      localStorage.setItem('courses', JSON.stringify(courses));
+      renderCourses();
+    }
+
+    document.getElementById('add-course').addEventListener('click', () => {
+      let name = document.getElementById('course-name').value.trim();
+      let creditUnit = parseFloat(document.getElementById('credit-unit').value);
+      let gradePoint = parseFloat(document.getElementById('grade-point').value);
+
+      if(name && creditUnit && gradePoint) {
+        courses.push({ name, creditUnit, gradePoint });
+        localStorage.setItem('courses', JSON.stringify(courses));
+        renderCourses();
+        document.getElementById('course-name').value = '';
+        document.getElementById('credit-unit').value = '';
+        document.getElementById('grade-point').value = '';
+      } else {
+        alert('Please enter all fields correctly.');
+      }
+    });
+
+    document.getElementById('calculate').addEventListener('click', () => {
+      if(courses.length === 0) {
+        alert('Add at least one course first.');
+        return;
+      }
+      let totalPoints = courses.reduce((sum, course) => sum + course.creditUnit * course.gradePoint, 0);
+      let totalUnits = courses.reduce((sum, course) => sum + course.creditUnit, 0);
+      let cgpa = (totalPoints / totalUnits).toFixed(2);
+      document.getElementById('result').textContent = `Your CGPA is ${cgpa}`;
+    });
+
+    document.getElementById('clear-courses').addEventListener('click', () => {
+      if(courses.length === 0){
+        alert('No courses to clear.');
+        return;
+      }
+      if(confirm('Are you sure you want to delete all courses?')) {
+        courses = [];
+        localStorage.removeItem('courses');
+        renderCourses();
+        document.getElementById('result').textContent = 'Your CGPA will appear here';
+      }
+    });
+
+    // Render saved courses on page load
+    renderCourses();
+  </script>
 
 </body>
-  </html>
+</html>
