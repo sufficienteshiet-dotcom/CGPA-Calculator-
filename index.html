@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CGPA Calculator</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+padding:20px;
+background:#f7f7f7;
+}
+
+h1{
+text-align:center;
+}
+
+input{
+padding:8px;
+margin:5px 0;
+width:100%;
+max-width:300px;
+}
+
+button{
+padding:8px 12px;
+margin:5px 5px 10px 0;
+background:#2c7be5;
+color:white;
+border:none;
+border-radius:4px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1a5fcc;
+}
+
+ul{
+padding-left:20px;
+}
+
+li{
+margin:6px 0;
+}
+
+#result{
+margin-top:20px;
+font-size:1.4em;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>CGPA Calculator</h1>
+
+<input type="text" id="courseName" placeholder="Course Name">
+
+<input type="number" id="creditUnit" placeholder="Credit Unit">
+
+<input type="number" id="gradePoint" placeholder="Grade Point">
+
+<br>
+
+<button onclick="addCourse()">Add Course</button>
+
+<button onclick="calculateCGPA()">Calculate CGPA</button>
+
+<button onclick="clearCourses()">Clear All Courses</button>
+
+<h3>Courses:</h3>
+
+<ul id="courseList"></ul>
+
+<h2 id="result">CGPA: 0.00</h2>
+
+<script>
+
+let courses = [];
+
+
+function addCourse(){
+
+let name=document.getElementById("courseName").value;
+
+let credit=Number(document.getElementById("creditUnit").value);
+
+let grade=Number(document.getElementById("gradePoint").value);
+
+
+if(!name || !credit || !grade){
+
+alert("Please fill all fields");
+
+return;
+
+}
+
+
+courses.push({name,credit,grade});
+
+
+localStorage.setItem("courses",JSON.stringify(courses));
+
+
+displayCourses();
+
+
+document.getElementById("courseName").value="";
+
+document.getElementById("creditUnit").value="";
+
+document.getElementById("gradePoint").value="";
+
+}
+
+
+
+function displayCourses(){
+
+let list=document.getElementById("courseList");
+
+list.innerHTML="";
+
+
+courses.forEach((course,index)=>{
+
+
+let li=document.createElement("li");
+
+
+li.textContent=`${course.name} | CU: ${course.credit} | GP: ${course.grade} `;
+
+
+let deleteBtn=document.createElement("button");
+
+deleteBtn.textContent="Delete";
+
+
+deleteBtn.onclick=function(){
+
+deleteCourse(index);
+
+};
+
+
+li.appendChild(deleteBtn);
+
+
+list.appendChild(li);
+
+
+});
+
+}
+
+
+
+function deleteCourse(index){
+
+courses.splice(index,1);
+
+
+localStorage.setItem("courses",JSON.stringify(courses));
+
+
+displayCourses();
+
+}
+
+
+
+function calculateCGPA(){
+
+let totalPoints=0;
+
+let totalCredits=0;
+
+
+courses.forEach(course=>{
+
+totalPoints+=course.grade*course.credit;
+
+totalCredits+=course.credit;
+
+});
+
+
+if(totalCredits===0){
+
+alert("Add courses first");
+
+return;
+
+}
+
+
+let cgpa=totalPoints/totalCredits;
+
+
+document.getElementById("result").textContent=`CGPA: ${cgpa.toFixed(2)}`;
+
+}
+
+
+
+function clearCourses(){
+
+courses=[];
+
+
+localStorage.removeItem("courses");
+
+
+displayCourses();
+
+
+document.getElementById("result").textContent="CGPA: 0.00";
+
+}
+
+
+
+window.onload=function(){
+
+let savedCourses=localStorage.getItem("courses");
+
+if(savedCourses){
+
+courses=JSON.parse(savedCourses);
+
+displayCourses();
+
+}
+
+}
+
+</script>
+
+</body>
+  </html>
